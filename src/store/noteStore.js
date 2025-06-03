@@ -40,7 +40,7 @@ const useNoteStore = create(
         toggleBlur:(id)=>
           set((state)=>({
             notes:state.notes.map((note)=>
-            note.id == id?{...note,blur:!note.blur}:note)
+              note.id == id?{...note,blur:!note.blur}:note)
           })),
         filterNotesByTagColor:(color)=>
           set((state)=>({
@@ -52,12 +52,7 @@ const useNoteStore = create(
             set((state) => ({
               filteredNotes: state.notes.filter((note) => note.color === color),
             })),
-            selectedTag:(color)=>
-              set((state)=>({
-                notes:state.notes.map((note)=>
-                
-                )
-              }))
+           
           resetFilter: () =>
             set((state) => ({
               filteredNotes: [...state.notes],

@@ -7,8 +7,11 @@ import Button from "./Button";
 const Note = ({ data }) => {
   const roundedCircle =
     "w-[30px] h-[30px] rounded-full bg-[#141414] text-white flex justify-center items-center hover:bg-white hover:text-[#141414] hover:scale-80 transition-all duration-200 cursor-pointer";
-
-  const { id, color, title, content, blur,date } = data;
+    const note = useNoteStore((state) =>
+      state.notes.find((n) => n.id === data.id)
+    );
+    
+    const { id, color, title, content, blur, date } = note || data;
   const actions = [
     {
       icon: <Trash2 size={15} />,
@@ -28,7 +31,6 @@ const Note = ({ data }) => {
   ];
   const deleteNote = useNoteStore((state) => state.deleteNote);
   const toggleBlur = useNoteStore((state) => state.toggleBlur);
-
   return (
     <div
       className={clsx("w-[300px] p-4 rounded-md text-black")}
@@ -43,7 +45,6 @@ const Note = ({ data }) => {
         <ul className="flex gap-1">
           {actions.map(({ icon, path, onClick }, index) => (
             <Button
-              blur={blur}
               path={path}
               key={index}
               className={roundedCircle}

@@ -14,7 +14,6 @@ const Button = ({
   type = "button",
   preventDefaultStyle = false,
   className = "",
-  blur,
   ...rest
 }) => {
   const VARIANTS = {
@@ -32,7 +31,6 @@ const Button = ({
   };
 
   const baseBtn = "px-6 py-2 rounded-full";
-
   const computedClass = preventDefaultStyle
     ? className 
     : clsx(
