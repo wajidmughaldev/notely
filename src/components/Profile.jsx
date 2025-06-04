@@ -1,9 +1,20 @@
 import { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 import Logout from './Logout';
+import useAuthStore from '../store/authStore';
 
 export default function Profile() {
   const [open, setOpen] = useState(false);
+  const currentUser = useAuthStore((state)=>state.currentUser)
+  const{name}=currentUser
+  const profileInitials = name
+  ? name
+      .split(' ')
+      .map(word => word[0])
+      .join('')
+      .slice(0, 3)
+      .toUpperCase()
+  : 'USR';
 
   return (
     <div className="relative inline-block text-left font-sans">
@@ -12,10 +23,10 @@ export default function Profile() {
         onClick={() => setOpen(!open)}
         className="flex items-center gap-2 px-4 py-2 bg-white rounded-xl shadow cursor-pointer"
       >
-        <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-red-500 font-bold text-lg">
-          WK
+        <div className="w-10 h-10 rounded-full bg-stone-500 flex items-center justify-center text-white font-bold text-lg">
+          {profileInitials}
         </div>
-        <span className="text-red-500 font-medium">Wajid Khan</span>
+        <span className="text-stone-600 font-medium">{name.toUpperCase()}</span>
         <ChevronDown className="w-4 h-4 text-gray-600" />
       </button>
 
