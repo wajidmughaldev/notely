@@ -12,7 +12,8 @@ import NotesArea from "./components/NotesArea";
 import EditNote from "./components/EditNote";
 import Slideup from "./components/framer-motion/Slideup";
 import PageNotFound from "./pages/PageNotFound";
-
+import ProtectedRoute from "./components/ProtectedRoute";
+import RedirectIfLoggedIn from "./components/RedirectIfLoggedIn";
 function App() {
   const location = useLocation();
 
@@ -21,7 +22,6 @@ function App() {
     location.pathname === "/login" || location.pathname === "/signup";
 
   return (
-
     <div className="relative min-h-screen bg-grid overflow-hidden">
       <div className="absolute inset-0 z-0">
         <BlurOverlay />
@@ -32,8 +32,22 @@ function App() {
           <Container>
             <AnimatePresence mode="wait">
               <Routes location={location} key={location.pathname}>
-                <Route element={<Login />} path="/login" />
-                <Route element={<Signup />} path="/signup" />
+                <Route
+                  element={
+                    <RedirectIfLoggedIn>
+                      <Login />
+                    </RedirectIfLoggedIn>
+                  }
+                  path="/login"
+                />
+                <Route
+                  element={
+                    <RedirectIfLoggedIn>
+                      <Signup />
+                    </RedirectIfLoggedIn>
+                  }
+                  path="/signup"
+                />
               </Routes>
             </AnimatePresence>
           </Container>
@@ -42,19 +56,46 @@ function App() {
           <div className="">
             <AnimatePresence mode="wait">
               <Routes location={location} key={location.pathname}>
-              <Route path="*" element={<PageNotFound/>}/>
-              <Route element={<Dashboard />}>
-                <Route index element={<Slideup><NotesArea /></Slideup>} />{" "}
-                <Route path="add" element={<Slideup><AddNote /></Slideup>} />{" "}
-                <Route path="edit/:id" element={<Slideup><EditNote /></Slideup>} />{" "}
-              </Route>
+                <Route path="*" element={<PageNotFound />} />
+                <Route
+                  path="/"
+                  element={
+                    <ProtectedRoute>
+                      <Dashboard />
+                    </ProtectedRoute>
+                  }
+                >
+                  <Route
+                    index
+                    element={
+                      <Slideup>
+                        <NotesArea />
+                      </Slideup>
+                    }
+                  />{" "}
+                  <Route
+                    path="add"
+                    element={
+                      <Slideup>
+                        <AddNote />
+                      </Slideup>
+                    }
+                  />{" "}
+                  <Route
+                    path="edit/:id"
+                    element={
+                      <Slideup>
+                        <EditNote />
+                      </Slideup>
+                    }
+                  />{" "}
+                </Route>
               </Routes>
             </AnimatePresence>
           </div>
         )}
       </div>
     </div>
-
   );
 }
 

@@ -1,18 +1,27 @@
-import Button from './Button'
-import SearchBar from './SearchBar'
-import React from 'react'
+import React from 'react';
+import Button from './Button';
+import SearchBar from './SearchBar';
+import Profile from './Profile';
+import useAuthStore from '../store/authStore';
 
 const Header = () => {
-  return (
-    <div className=' flex items-start justify-between'>
-        <SearchBar />   
-        <div>
-            
-        <Button text="login / " size='md' variant='link' path="/login"/>
-        <Button text="Sign up" size='md' variant='primary' path="/signup"/>
-        </div>
-    </div>
-  )
-}
+  const currentUser = useAuthStore((state) => state.currentUser);
 
-export default Header
+  return (
+    <div className="flex items-start justify-between  px-6">
+      <SearchBar />
+      <div className="flex gap-2 items-center">
+        {currentUser ? (
+          <Profile />
+        ) : (
+          <>
+            <Button text="Login" size="md" variant="link" path="/login" />
+            <Button text="Sign Up" size="md" variant="primary" path="/signup" />
+          </>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default Header;

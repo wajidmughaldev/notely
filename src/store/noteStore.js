@@ -11,7 +11,9 @@ const useNoteStore = create(
       notes: [
         
       ],
+      selectedTagColor:null,
       filteredNotes: [],
+      filterTagColor:null,
       addNote: (note) => {
         const newNote = {
           id: generateId(),
@@ -57,7 +59,14 @@ const useNoteStore = create(
             set((state) => ({
               filteredNotes: [...state.notes],
             })),
-
+            setSelectedTagColor: (color) =>
+              set((state) => ({
+                selectedTagColor: state.selectedTagColor=color,
+              })),
+              setFilterTagColor: (color) =>
+                set((state) => ({
+                  filterTagColor: color,
+                })),
     //   togglePin: (id) =>
     //     set((state) => ({
     //       notes: state.notes.map((note) =>
