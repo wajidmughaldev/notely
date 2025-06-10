@@ -6,9 +6,9 @@ import useAuthStore from '../store/authStore';
 export default function Profile() {
   const [open, setOpen] = useState(false);
   const currentUser = useAuthStore((state)=>state.currentUser)
-  const{name}=currentUser
-  const profileInitials = name
-  ? name
+  const{displayName}=currentUser
+  const profileInitials = displayName
+  ? displayName
       .split(' ')
       .map(word => word[0])
       .join('')
@@ -26,7 +26,7 @@ export default function Profile() {
         <div className="w-10 h-10 rounded-full bg-stone-500 flex items-center justify-center text-white font-bold text-lg">
           {profileInitials}
         </div>
-        <span className="text-stone-600 font-medium">{name.toUpperCase()}</span>
+        <span className="text-stone-600 font-medium">{displayName.toUpperCase()}</span>
         <ChevronDown className="w-4 h-4 text-gray-600" />
       </button>
 

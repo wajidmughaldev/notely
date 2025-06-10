@@ -1,101 +1,122 @@
 // src/store/useNoteStore.js
-import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
-
-// Utility to generate unique IDs
-const generateId = () => Date.now().toString()
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
+import useAuthStore from "./authStore";
+import noteService from "../services/noteService";
 
 const useNoteStore = create(
   persist(
     (set, get) => ({
-      notes: [
-        
-      ],
-      selectedTagColor:null,
+      notes: [],
       filteredNotes: [],
-      filterTagColor:null,
-      addNote: (note) => {
+      selectedTagColor: null,
+      filterTagColor: null,
+
+      fetchNotesFromFirestore: async () => {
+        const currentUser = useAuthStore.getState().currentUser;
+        if (!currentUser) return;
+
+        const notes = await noteService.getAllNotes(currentUser.uid);
+        set({ notes, filteredNotes: notes });
+      },
+
+      addNote: async (note) => {
+        const currentUser = useAuthStore.getState().currentUser;
+        if (!currentUser) return;
+      
         const newNote = {
-          id: generateId(),
           title: note.title,
           content: note.content,
           date: new Date().toDateString(),
           pinned: false,
           archived: false,
-          color: note.color || '#D9D9D9',
-          blur:false
-        }
-        set((state) => ({
-          notes: [...state.notes, newNote],
-        }))
+          color: note.color || "#D9D9D9",
+          blur: false,
+        };
+      
+        await noteService.addNote(currentUser.uid, newNote);
       },
-      deleteNote: (id) =>
-        set((state) => ({
-          notes: state.notes.filter((note) => note.id !== id),
-        })),
-      editNote: (updatedNote) =>
-        set((state) => ({
-          notes: state.notes.map((note) =>
-            note.id === updatedNote.id ? { ...note, ...updatedNote } : note
-          ),
-        })),
-        toggleBlur:(id)=>
-          set((state)=>({
-            notes:state.notes.map((note)=>
-              note.id == id?{...note,blur:!note.blur}:note)
-          })),
-        filterNotesByTagColor:(color)=>
-          set((state)=>({
-            notes:state.notes.filter((note)=>
-              note.color == color
-            )
-          })),
-          filterNotesByTagColor: (color) =>
-            set((state) => ({
-              filteredNotes: state.notes.filter((note) => note.color === color),
-            })),
-           
-          resetFilter: () =>
-            set((state) => ({
-              filteredNotes: [...state.notes],
-            })),
-            setSelectedTagColor: (color) =>
-              set((state) => ({
-                selectedTagColor: state.selectedTagColor=color,
-              })),
-              setFilterTagColor: (color) =>
-                set((state) => ({
-                  filterTagColor: color,
-                })),
-    //   togglePin: (id) =>
-    //     set((state) => ({
-    //       notes: state.notes.map((note) =>
-    //         note.id === id ? { ...note, pinned: !note.pinned } : note
-    //       ),
-    //     })),
-    //   toggleArchive: (id) =>
-    //     set((state) => ({
-    //       notes: state.notes.map((note) =>
-    //         note.id === id ? { ...note, archived: !note.archived } : note
-    //       ),
-    //     })),
-    //   setColor: (id, color) =>
-    //     set((state) => ({
-    //       notes: state.notes.map((note) =>
-    //         note.id === id ? { ...note, color } : note
-    //       ),
-    //     })),
-      // Optional filters
-    //   searchTerm: '',
-    //   setSearchTerm: (term) => set({ searchTerm: term }),
+      
 
-    //   colorFilter: '',
-    //   setColorFilter: (color) => set({ colorFilter: color }),
+      deleteNote: async (id) => {
+        const currentUser = useAuthStore.getState().currentUser;
+        if (!currentUser) return;
+
+        const success = await noteService.deleteNote(currentUser.uid, id);
+        if (success) {
+          const updatedNotes = get().notes.filter((note) => note.id !== id);
+          set({ notes: updatedNotes, filteredNotes: updatedNotes });
+        }
+      },
+
+      editNote: async (updatedNote) => {
+        const currentUser = useAuthStore.getState().currentUser;
+        if (!currentUser) return;
+
+        const success = await noteService.updateNote(
+          currentUser.uid,
+          updatedNote.id,
+          updatedNote
+        );
+
+        if (success) {
+          const updatedNotes = get().notes.map((note) =>
+            note.id === updatedNote.id ? { ...note, ...updatedNote } : note
+          );
+          set({ notes: updatedNotes, filteredNotes: updatedNotes });
+        }
+      },
+
+      toggleBlur: (id) =>
+        set((state) => {
+          const updatedNotes = state.notes.map((note) =>
+            note.id === id ? { ...note, blur: !note.blur } : note
+          );
+          return { notes: updatedNotes, filteredNotes: updatedNotes };
+        }),
+
+      filterNotesByTagColor: (color) =>
+        set((state) => ({
+          filteredNotes: state.notes.filter((note) => note.color === color),
+          filterTagColor: color,
+        })),
+
+      resetFilter: () =>
+        set((state) => ({
+          filteredNotes: [...state.notes],
+          filterTagColor: null,
+        })),
+
+      setSelectedTagColor: (color) => set(() => ({ selectedTagColor: color })),
+
+      togglePin: (id) =>
+        set((state) => {
+          const updatedNotes = state.notes.map((note) =>
+            note.id === id ? { ...note, pinned: !note.pinned } : note
+          );
+          return { notes: updatedNotes, filteredNotes: updatedNotes };
+        }),
+
+      toggleArchive: (id) =>
+        set((state) => {
+          const updatedNotes = state.notes.map((note) =>
+            note.id === id ? { ...note, archived: !note.archived } : note
+          );
+          return { notes: updatedNotes, filteredNotes: updatedNotes };
+        }),
+
+      setColor: (id, color) =>
+        set((state) => {
+          const updatedNotes = state.notes.map((note) =>
+            note.id === id ? { ...note, color } : note
+          );
+          return { notes: updatedNotes, filteredNotes: updatedNotes };
+        }),
     }),
     {
-      name: 'note-storage', // key in localStorage
+      name: "note-storage",
     }
   )
-)
+);
 
-export default useNoteStore
+export default useNoteStore;

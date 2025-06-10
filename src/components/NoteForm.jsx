@@ -4,8 +4,12 @@ import Button from "./Button";
 import Tag from "./slidebar/Tags";
 import { Undo2, Mic } from "lucide-react";
 import useNoteStore from "../store/NoteStore";
+import useAuthStore from "../store/authStore";
+// firebase
+import db from "../firebase/database";
 
 const NoteForm = (props) => {
+  console.log();
   const {
     mode = "add",
     initialTitle = "",
@@ -16,22 +20,23 @@ const NoteForm = (props) => {
   } = props;
 
   const navigate = useNavigate();
+  const currentUser = useAuthStore((state) => state.currentUser);
+  const uid = currentUser.uid
   const [title, setTitle] = useState(initialTitle);
   const [content, setContent] = useState(initialContent);
 
-  // ✅ NEW: Add state to track selected tag color
   const [selectedColor, setSelectedColor] = useState(selectedNoteColor);
 
   const addNote = useNoteStore((state) => state.addNote);
   const editNote = useNoteStore((state) => state.editNote);
-
   const handleSubmit = () => {
     if (!title.trim() || !content.trim()) return;
 
     if (mode === "edit") {
       editNote({ id: noteId, title, content, color: selectedColor });
     } else {
-      addNote({ title, content, color: selectedColor });
+      // addNote({ title, content, color: selectedColor });
+      addNote({ uid,title, content, color: selectedColor, })
     }
     navigate("/");
   };

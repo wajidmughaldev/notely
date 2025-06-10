@@ -44,7 +44,7 @@ function App() {
                   element={
                     <RedirectIfLoggedIn>
                       <Signup />
-                    </RedirectIfLoggedIn>
+                    </RedirectIfLoggedIn> 
                   }
                   path="/signup"
                 />
@@ -60,7 +60,7 @@ function App() {
                 <Route
                   path="/"
                   element={
-                    <ProtectedRoute>
+                   <ProtectedRoute>
                       <Dashboard />
                     </ProtectedRoute>
                   }
