@@ -68,13 +68,32 @@ const useNoteStore = create(
         }
       },
     
-      toggleBlur: (id) =>
-        set((state) => {
-          const updatedNotes = state.notes.map((note) =>
-            note.id === id ? { ...note, blur: !note.blur } : note
-          );
-          return { notes: updatedNotes, filteredNotes: updatedNotes };
-        }),
+      toggleBlur: async (id) => {
+        const { notes } = get(); // you might need to access `get` from Zustand store if not passed
+        const currentUser = useAuthStore.getState().currentUser;
+        const updatedNotes = notes.map((note) => {
+          if (note.id === id) {
+            return { ...note, blur: !note.blur };
+          }
+          return note;
+        });
+      console.log(updatedNotes)
+        const updatedNote = updatedNotes.find((note) => note.id === id);
+      
+        try {
+          await noteService.updateNote(currentUser.uid, id, {
+            blur: updatedNote.blur, 
+          });
+      
+          set({
+            notes: updatedNotes,
+            filteredNotes: updatedNotes,
+          });
+        } catch (error) {
+          console.error("Failed to update blur:", error);
+        }
+      },
+      
 
       filterNotesByTagColor: (color) =>
         set((state) => ({
