@@ -3,7 +3,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import useAuthStore from "./authStore";
 import noteService from "../services/noteService";
-
+import {serverTimestamp} from 'firebase/firestore'
 const useNoteStore = create(
   persist(
     (set, get) => ({
@@ -11,7 +11,7 @@ const useNoteStore = create(
       filteredNotes: [],
       selectedTagColor: null,
       filterTagColor: null,
-
+      searchTerm:'',
       fetchNotesFromFirestore: async () => {
         const currentUser = useAuthStore.getState().currentUser;
         if (!currentUser) return;
@@ -32,6 +32,7 @@ const useNoteStore = create(
           archived: false,
           color: note.color || "#D9D9D9",
           blur: false,
+          createdAt:serverTimestamp()
         };
       
         await noteService.addNote(currentUser.uid, newNote);
@@ -66,7 +67,7 @@ const useNoteStore = create(
           set({ notes: updatedNotes, filteredNotes: updatedNotes });
         }
       },
-
+    
       toggleBlur: (id) =>
         set((state) => {
           const updatedNotes = state.notes.map((note) =>
@@ -112,6 +113,15 @@ const useNoteStore = create(
           );
           return { notes: updatedNotes, filteredNotes: updatedNotes };
         }),
+      searchNotes: (searchTerm) =>
+        set((state) => ({
+          searchTerm,
+          filteredNotes: state.notes.filter((note) =>
+            note.title.toLowerCase().includes(searchTerm.toLowerCase())
+          ),
+        })),
+      
+    
     }),
     {
       name: "note-storage",

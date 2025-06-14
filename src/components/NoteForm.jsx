@@ -6,7 +6,7 @@ import { Undo2, Mic } from "lucide-react";
 import useNoteStore from "../store/NoteStore";
 import useAuthStore from "../store/authStore";
 // firebase
-import db from "../firebase/database";
+// import db from "../firebase/database";
 
 const NoteForm = (props) => {
   console.log();

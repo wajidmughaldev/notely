@@ -1,15 +1,18 @@
-import React, { useEffect } from 'react';
-import Note from './Note';
-import useNoteStore from '../store/noteStore';
-import useAuthStore from '../store/authStore';
+import React, { useEffect } from "react";
+import Note from "./Note";
+import useNoteStore from "../store/noteStore";
+import useAuthStore from "../store/authStore";
 
 const NotesArea = () => {
   const currentUser = useAuthStore((state) => state.currentUser);
   const notes = useNoteStore((state) => state.filteredNotes);
   const allNotes = useNoteStore((state) => state.notes);
   const resetFilter = useNoteStore((state) => state.resetFilter);
-  const fetchNotesFromFirestore = useNoteStore((state) => state.fetchNotesFromFirestore);
+  const fetchNotesFromFirestore = useNoteStore(
+    (state) => state.fetchNotesFromFirestore
+  );
 
+  console.log(notes);
   useEffect(() => {
     if (currentUser) {
       fetchNotesFromFirestore(currentUser.uid);
@@ -20,7 +23,11 @@ const NotesArea = () => {
 
   const showNoNotesMessage = () => {
     if (allNotes.length === 0) {
-      return <p className="text-gray-500">Click <strong>+</strong> icon to add new notes.</p>;
+      return (
+        <p className="text-gray-500">
+          Click <strong>+</strong> icon to add new notes.
+        </p>
+      );
     }
 
     if (notes.length === 0 && allNotes.length > 0) {
@@ -43,12 +50,15 @@ const NotesArea = () => {
         </small>
       )}
 
-      <div className="flex gap-3 flex-wrap">
-        {notes.length > 0 ? (
-          notes.map((note) => <Note key={note.id} data={note} />)
-        ) : (
-          showNoNotesMessage()
-        )}
+      {/* <div className="flex gap-3 flex-wrap items-start"  > */}
+      <div className="columns-1 sm:columns-2 md:columns-4 ">
+        {notes.length > 0
+          ? notes.map((note) => (
+              <div key={note.id} className="break-inside-avoid mb-4">
+                <Note data={note} />
+              </div>
+            ))
+          : showNoNotesMessage()}
       </div>
     </div>
   );

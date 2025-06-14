@@ -6,6 +6,8 @@ import {
     deleteDoc,
     doc,
     getDocs,
+    query,
+    orderBy 
   } from "firebase/firestore";
   import { db } from "../firebase/config";
   
@@ -46,7 +48,8 @@ import {
     getAllNotes: async (uid) => {
       try {
         const colRef = collection(db, "users", uid, "notes");
-        const snapshot = await getDocs(colRef);
+        const q = query(colRef, orderBy("createdAt", "desc"));
+        const snapshot = await getDocs(q);
         return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
       } catch (error) {
         console.error("Error fetching notes:", error);

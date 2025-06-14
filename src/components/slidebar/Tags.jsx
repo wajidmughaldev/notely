@@ -27,7 +27,7 @@ const Tags = ({ direction = 'col',stc, selectedNoteColor, handleTagColor = () =>
           onClick={() => {
             handleTagColor(color); // from props (used by NoteForm)
             filterNotesByTagColor(color); // keeps filter working
-            setFilterTagColor(color); // only for Sidebar filter
+            // setFilterTagColor(color); // only for Sidebar filter
           }}
         />
       ))}

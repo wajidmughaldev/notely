@@ -21,12 +21,12 @@ export default function Profile() {
       {/* Profile Button */}
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-2 px-4 py-2 bg-white rounded-xl shadow cursor-pointer"
+        className="flex items-center gap-2 px-2 py-1 bg-white rounded-xl shadow cursor-pointer"
       >
-        <div className="w-10 h-10 rounded-full bg-stone-500 flex items-center justify-center text-white font-bold text-lg">
+        <div className="w-8 h-8 rounded-full bg-stone-500 flex items-center justify-center text-white font-bold text-small">
           {profileInitials}
         </div>
-        <span className="text-stone-600 font-medium">{displayName.toUpperCase()}</span>
+        <small className="text-stone-600 font-">{displayName.toUpperCase()}</small>
         <ChevronDown className="w-4 h-4 text-gray-600" />
       </button>
 
